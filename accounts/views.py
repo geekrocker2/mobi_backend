@@ -11,6 +11,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from .models import CustomUser
 import uuid
+from rest_framework_simplejwt.tokens import RefreshToken
 
 class RegisterView(APIView):
     def post(self, request):
@@ -50,40 +51,27 @@ class RegisterView(APIView):
             email=email,
             mobile_number=mobile_number,
             date_of_birth=dob,
-            is_email_verified=True
+            is_email_verified=True,  # User is verified by default
+            is_active=True  # Ensure user is active
         )
         user.set_password(password)  # Hashes the password
-
-        # Optionally generate a new token here; our save() method does this, but we'll do it explicitly too.
-        user.email_verification_token = str(uuid.uuid4())
         user.save()
 
-        # Construct the verification link (adjust the domain as needed)
-        verification_link = f"http://127.0.0.1:8000/api/verify-email/?token={user.email_verification_token}"
+        # Generate JWT tokens for immediate login
+        refresh = RefreshToken.for_user(user)
+        
+        return Response({
+            "message": "Registration successful!",
+            "refresh": str(refresh),
+            "access": str(refresh.access_token),
+            "user": {
+                "id": user.id,
+                "email": user.email,
+                "username": user.username
+            }
+        }, status=status.HTTP_201_CREATED)
 
-        # Send the verification email (this will print to the console)
-        subject = "Verify Your Email Address"
-        message = f"Hi, please verify your email address by clicking the following link: {verification_link}"
-        from_email = getattr(settings, "DEFAULT_FROM_EMAIL", "noreply@example.com")
-        recipient_list = [email]
-        send_mail(subject, message, from_email, recipient_list)
-
-        return Response({"message": "Registration successful. Please check your email to verify your account."},
-                        status=status.HTTP_201_CREATED)
-
+# Keep this view for backward compatibility, but it's no longer needed
 class VerifyEmailView(APIView):
     def get(self, request):
-        token = request.GET.get("token")
-        if not token:
-            return Response({"error": "Token is required."}, status=status.HTTP_400_BAD_REQUEST)
-        try:
-            user = CustomUser.objects.get(email_verification_token=token)
-        except CustomUser.DoesNotExist:
-            return Response({"error": "Invalid token."}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Mark the user as verified and clear the token
-        user.is_email_verified = True
-        user.email_verification_token = ""
-        user.save()
-
-        return Response({"message": "Email verified successfully."}, status=status.HTTP_200_OK)
+        return Response({"message": "Email verification is not required."}, status=status.HTTP_200_OK)
