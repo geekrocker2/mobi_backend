@@ -15,4 +15,3 @@ djangorestframework-simplejwt==5.2.2
 Pillow==9.5.0  # For image processing
 django-filter==23.2  # For filtering in DRF
 markdown==3.4.3  # For DRF browsable API
-python-dotenv==1.0.0  # For loading environment variables
