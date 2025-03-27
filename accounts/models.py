@@ -39,7 +39,7 @@ def geocode_location(location_name):
 class CustomUser(AbstractUser):
     mobile_number = models.CharField(max_length=15, blank=True, null=True)
     date_of_birth = models.DateField(blank=True, null=True)
-    is_email_verified = models.BooleanField(default=False)
+    is_email_verified = models.BooleanField(default=True)
     email_verification_token = models.CharField(max_length=255, blank=True, null=True)
 
     # Optional: Track accepted friendships
