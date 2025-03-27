@@ -50,7 +50,7 @@ class RegisterView(APIView):
             email=email,
             mobile_number=mobile_number,
             date_of_birth=dob,
-            is_email_verified=False
+            is_email_verified=True
         )
         user.set_password(password)  # Hashes the password
 
