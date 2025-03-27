@@ -133,10 +133,6 @@ USE_I18N = True
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproje
-# ... (everything above remains the same) ...
-
-# Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = '/static/'
@@ -163,6 +159,10 @@ SIMPLE_JWT = {
 
 # Email backend for development (prints emails to the console)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Disable email verification
+EMAIL_VERIFICATION = False
+ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 # Media files (for user uploads like profile photos)
 MEDIA_URL = '/media/'
